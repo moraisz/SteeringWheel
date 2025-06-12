@@ -1,0 +1,32 @@
+# Arquivos de build
+/Debug/
+/Release/
+/build/
+
+# Arquivos de IDE
+*.launch
+*.uvoptx
+*.uvprojx
+*.cproject
+*.project
+*.settings/
+*.swp
+
+# Binários e outros gerados
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.d
+*.lst
+
+# Backup temporários
+*~
+*.bak
+*.tmp
+
+# Mac OS / Linux / Windows
+.DS_Store
+Thumbs.db
+desktop.ini
