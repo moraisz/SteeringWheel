@@ -222,7 +222,7 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[] __ALIGN_END =
 		0x05, 0x01,        // Usage Page (Generic Desktop)
 		0x09, 0x04,        // Usage (Joystick)
 		0xA1, 0x01,        // Collection (Application)
-		0x09, 0x30,        //   Usage (X)
+		0x09, 0x38,        //   Usage (Wheel)
 		0x16, 0x00, 0x80,  //   Logical Minimum (-32768)
 		0x26, 0xFF, 0x7F,  //   Logical Maximum (32767)
 		0x75, 0x10,        //   Report Size (16)
