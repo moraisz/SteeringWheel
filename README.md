@@ -18,6 +18,7 @@ O volante é composto, até o momento, por:
 
 ✅ - Funcionando perfeitamente.  
 ☑️ - Funciona, mas com limitações ou bugs.  
-❌ - Não funciona ou não foi testado.
+❌ - Não funciona.
 
 - Assetto Corsa ✅
+- Euro Truck Simulator 2 ✅

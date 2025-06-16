@@ -99,53 +99,54 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     uint8_t report[2];
 
-    uint16_t last_axis = 0;
-    uint16_t axis = 0;
+    int16_t last_axis = 0;
+    int16_t axis = 0;
     int32_t encoder_position = 0;
 
     int16_t delta = 0;
-    int16_t degree = 0;
     float angle = 0.0f;
-    float scaled = 0.0f;
+    int16_t scaled = 0;
+
+    static uint32_t last_tick = 0;
+    uint32_t current_tick = 0;
 
     while (1)
     {
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
-        axis = __HAL_TIM_GET_COUNTER(&htim5);  // Read the current position of the encoder
-        delta = (int16_t)(axis - last_axis);  // Calculate the difference (delta) since the last reading
+        current_tick = HAL_GetTick();
+        if ((current_tick - last_tick) >= 2) { // Aproximadamente 2ms de intervalo
+            last_tick = current_tick;
 
-        if (delta != 0)  // Only send a report if there was movement
-        {
-            // Accumulate the encoder position and update the last axis
-            encoder_position += delta;
-            last_axis = axis;
+            axis = __HAL_TIM_GET_COUNTER(&htim5);  // Read the current position of the encoder
+            delta = axis - last_axis;  // Calculate the difference (delta) since the last reading
 
-            // Clamp the angle to the range [-450, 450] degrees
-            angle = ((float)encoder_position / 2400.0f) * 360.0f;
-            if (angle > 450.0f) angle = 450.0f;
-            if (angle < -450.0f) angle = -450.0f;
+            if (delta != 0)  // Only send a report if there was movement
+            {
+                // Accumulate the encoder position and update the last axis
+                encoder_position += delta;
+                last_axis = axis;
 
-            // Scale the angle to the int16_t range [-32768, 32767]
-            scaled = (angle / 450.0f) * 32767.0f;
-            if (scaled > 32767.0f) scaled = 32767.0f;
-            if (scaled < -32768.0f) scaled = -32768.0f;
+                // Clamp the angle to the range [-450, 450] degrees
+                angle = ((float)encoder_position / 2400.0f) * 360.0f;
+                if (angle > 450.0f) angle = 450.0f;
+                if (angle < -450.0f) angle = -450.0f;
 
-            // Convert the scaled value to int16_t
-            degree = (int16_t)scaled;
+                // Scale the angle to the int16_t range [-32768, 32767]
+                scaled = (int16_t)((angle / 450.0f) * 32767.0f);
 
-            // Split the 16-bit value into two bytes for the HID report
-            report[0] = degree & 0xFF;
-            report[1] = (degree >> 8) & 0xFF;
+                // Split the 16-bit value into two bytes for the HID report
+                report[0] = scaled & 0xFF;
+                report[1] = (scaled >> 8) & 0xFF;
 
-            if (hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED) {
-                USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
-                HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+                if (hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED) {
+                    USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
+                    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+                }
             }
-        }
 
-        HAL_Delay(10);
+        }
     }
     /* USER CODE END 3 */
 }
